@@ -1,5 +1,10 @@
 {% extends 'hello/index.html.twig' %}
 
+{% block javascripts %}
+    {{ parent() }}
+    {{ encore_entry_script_tags('payment') }}
+{% endblock %}
+
 {% block navbar '' %}
 
 {% block subtitle '<h2>Not a subtitle</h2>' %}
