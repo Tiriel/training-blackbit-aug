@@ -18,6 +18,7 @@ class SmokeControllerTest extends WebTestCase
 
     /**
      * @dataProvider provideMethodAndStaticUrl
+     * @group smoke
      */
     public function testPublicUrlIsSuccessful(string $method, string $url): void
     {

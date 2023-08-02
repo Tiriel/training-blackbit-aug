@@ -11,6 +11,14 @@
         {% endblock %}
     </head>
     <body>
+        <header>
+            {% block navbar %}
+                {{ include('includes/_navbar.html.twig', with_context = false) }}
+            {% endblock %}
+        </header>
         {% block body %}{% endblock %}
+        <footer>
+            {{ render_esi(controller('App\\Controller\\MovieController::decadesMenu')) }}
+        </footer>
     </body>
 </html>
