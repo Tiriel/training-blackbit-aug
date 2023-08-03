@@ -5,6 +5,7 @@ namespace App\Repository;
 use App\Entity\Book;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
+use function Doctrine\ORM\QueryBuilder;
 
 /**
  * @extends ServiceEntityRepository<Book>
@@ -19,6 +20,23 @@ class BookRepository extends ServiceEntityRepository
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, Book::class);
+    }
+
+    public function findByApproxTitle(string $title): Book
+    {
+        $qb = $this->createQueryBuilder('b');
+
+        return $qb->select('b')
+            ->where(
+                $qb->expr()->like(
+                    'b.title',
+                    $qb->expr()->literal('%:title%')
+                )
+            )
+            ->setParameter('title', $title)
+            ->setMaxResults(1)
+            ->getQuery()
+            ->getOneOrNullResult();
     }
 
 //    /**

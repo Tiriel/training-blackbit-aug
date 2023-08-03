@@ -7,7 +7,8 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\IdGenerator\UuidGenerator;
 use Symfony\Component\Uid\Uuid;
 
-#[ORM\Entity(repositoryClass: GenreRepository::class)]
+#[ORM\Entity(repositoryClass: GenreRepository::class, readOnly: true)]
+#[ORM\ChangeTrackingPolicy('DEFERRED_EXPLICIT')]
 class Genre
 {
     #[ORM\Id]
