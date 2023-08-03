@@ -37,7 +37,13 @@ class Book
     #[ORM\Column(type: Types::DATE_IMMUTABLE)]
     private ?\DateTimeImmutable $releasedAt = null;
 
-    #[ORM\OneToMany(mappedBy: 'book', targetEntity: Comment::class, cascade: ['persist'], orphanRemoval: true)]
+    #[ORM\OneToMany(
+        mappedBy: 'book',
+        targetEntity: Comment::class,
+        cascade: ['persist'],
+        fetch: 'EXTRA_LAZY',
+        orphanRemoval: true
+    )]
     private Collection $comments;
 
     public function __construct()

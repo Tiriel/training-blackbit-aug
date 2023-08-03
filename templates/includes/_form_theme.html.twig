@@ -1,0 +1,9 @@
+{% extends 'bootstrap_5_horizontal_layout.html.twig' %}
+
+{% block form_label_content %}
+    {{ parent() }}
+    {% if required %}
+        <span class="required" title="This field is required">*</span>
+    {% endif %}
+{% endblock %}
+
