@@ -8,9 +8,12 @@ use App\Movie\Search\Omdb\Transformer\OmdbToMovieTransformer;
 use App\Movie\Search\SearchTypes;
 use App\Repository\MovieRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\Console\Style\SymfonyStyle;
 
 class MovieProvider
 {
+    private ?SymfonyStyle $io = null;
+
     public function __construct(
         private readonly OmdbApiConsumer $consumer,
         private readonly EntityManagerInterface $manager,
@@ -25,21 +28,32 @@ class MovieProvider
 
     public function getMovie(SearchTypes $type, string $value): Movie
     {
+        $this->io?->text('Fetching from OMDb API...');
         $data = $this->consumer->fetchMovie($type, $value);
 
         if ($movie = $this->manager->getRepository(Movie::class)->findOneBy(['title' => $data['Title']])) {
+            $this->io?->note('Movie already in database!');
+
             return $movie;
         }
 
+        $this->io?->text('Creating the Movie object...');
         $movie = $this->transformer->transform($data);
 
         foreach ($this->genreProvider->getFromOmdbString($data['Genre']) as $genre) {
             $movie->addGenre($genre);
         }
 
+        $this->io?->text('Saving in database...');
         $this->manager->persist($movie);
         $this->manager->flush();
+        $this->io?->info('Movie saved!');
 
         return $movie;
+    }
+
+    public function setIo(?SymfonyStyle $io): void
+    {
+        $this->io = $io;
     }
 }

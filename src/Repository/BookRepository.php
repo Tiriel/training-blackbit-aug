@@ -22,7 +22,7 @@ class BookRepository extends ServiceEntityRepository
         parent::__construct($registry, Book::class);
     }
 
-    public function findByApproxTitle(string $title): Book
+    public function findByApproxTitle(string $title): ?Book
     {
         $qb = $this->createQueryBuilder('b');
 
@@ -30,10 +30,9 @@ class BookRepository extends ServiceEntityRepository
             ->where(
                 $qb->expr()->like(
                     'b.title',
-                    $qb->expr()->literal('%:title%')
+                    $qb->expr()->literal('%'.$title.'%')
                 )
             )
-            ->setParameter('title', $title)
             ->setMaxResults(1)
             ->getQuery()
             ->getOneOrNullResult();
