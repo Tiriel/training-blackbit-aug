@@ -16,8 +16,6 @@ class OmdbToMovieTransformer implements DataTransformerInterface
         'Year',
     ];
 
-    public function __construct(private readonly OmdbToGenreTransformer $transformer) {}
-
     public function transform(mixed $value): Movie
     {
         if (!is_array($value) || \count(array_diff(self::KEYS, array_keys($value))) > 0) {
@@ -26,19 +24,13 @@ class OmdbToMovieTransformer implements DataTransformerInterface
 
         $date = 'N/A' === $value['Released'] ? '01-01-'.$value['Year'] : $value['Released'];
 
-        $movie = (new Movie())
+        return (new Movie())
             ->setTitle($value['Title'])
             ->setPoster($value['Poster'])
             ->setCountry($value['Country'])
             ->setPlot($value['Plot'])
             ->setReleasedAt(new \DateTimeImmutable($date))
             ;
-
-        foreach (explode(', ', $value['Genre']) as $name) {
-            $movie->addGenre($this->transformer->transform($name));
-        }
-
-        return $movie;
     }
 
     public function reverseTransform(mixed $value)
