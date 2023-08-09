@@ -6,7 +6,7 @@ use App\Entity\Book;
 use App\Repository\BookRepository;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
 
-class BookManager
+class BookManager implements ManagerInterface
 {
     public function __construct(
         private readonly BookRepository $repository,
