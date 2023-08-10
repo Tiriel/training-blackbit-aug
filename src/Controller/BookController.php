@@ -8,7 +8,7 @@ use App\Entity\Comment;
 use App\Entity\User;
 use App\Form\BookType;
 use App\Repository\BookRepository;
-use App\Security\BookPermissions;
+use App\Security\Permissions\BookPermissions;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;

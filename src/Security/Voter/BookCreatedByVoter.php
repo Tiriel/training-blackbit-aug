@@ -4,7 +4,7 @@ namespace App\Security\Voter;
 
 use App\Entity\Book;
 use App\Entity\User;
-use App\Security\BookPermissions;
+use App\Security\Permissions\BookPermissions;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Authorization\Voter\Voter;
 

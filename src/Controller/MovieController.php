@@ -6,6 +6,7 @@ use App\Entity\Movie;
 use App\Form\MovieType;
 use App\Movie\Search\Omdb\Provider\MovieProvider;
 use App\Repository\MovieRepository;
+use App\Security\Permissions\MoviePermissions;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -19,13 +20,15 @@ class MovieController extends AbstractController
     public function index(MovieRepository $repository): Response
     {
         return $this->render('movie/index.html.twig', [
-            'movies' => $repository->findAll(),
+            'movies' => $repository->findAllByRating(),
         ]);
     }
 
     #[Route('/{id}', name: 'app_movie_show', requirements: ['id' => '\d+'], methods: ['GET'])]
     public function show(?Movie $movie): Response
     {
+        $this->denyAccessUnlessGranted(MoviePermissions::RATED, $movie);
+
         return $this->render('movie/show.html.twig', [
             'movie' => $movie,
         ]);
@@ -35,11 +38,15 @@ class MovieController extends AbstractController
     #[Route('/{id}/edit', name: 'app_movie_edit', requirements: ['id' => '\d+'], methods: ['GET', 'POST'])]
     public function save(Request $request, ?Movie $movie, EntityManagerInterface $manager): Response
     {
+        if ($movie) {
+            $this->denyAccessUnlessGranted(MoviePermissions::EDIT, $movie);
+        }
+
         $movie ??= new Movie();
         $form = $this->createForm(MovieType::class, $movie);
 
         $form->handleRequest($request);
-        if ($form->isSubmitted() && $form->isValid()) {
+        if ($form->isSubmitted() && $form->isValid() && $this->isGranted(MoviePermissions::RATED, $movie)) {
             $manager->persist($movie);
             $manager->flush();
 
@@ -54,8 +61,11 @@ class MovieController extends AbstractController
     #[Route('/search/{title}', name: 'app_movie_search', methods: ['GET'])]
     public function search(string $title, MovieProvider $provider): Response
     {
+        $movie = $provider->getMovieByTitle($title);
+        $this->denyAccessUnlessGranted(MoviePermissions::RATED, $movie);
+
         return $this->render('movie/show.html.twig', [
-            'movie' => $provider->getMovieByTitle($title)
+            'movie' => $movie,
         ]);
     }
 

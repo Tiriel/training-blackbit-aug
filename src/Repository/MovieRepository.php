@@ -3,8 +3,12 @@
 namespace App\Repository;
 
 use App\Entity\Movie;
+use App\Entity\User;
+use App\Security\Permissions\MoviePermissions;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
+use Symfony\Bundle\SecurityBundle\Security;
+use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
 
 /**
  * @extends ServiceEntityRepository<Movie>
@@ -16,9 +20,33 @@ use Doctrine\Persistence\ManagerRegistry;
  */
 class MovieRepository extends ServiceEntityRepository
 {
-    public function __construct(ManagerRegistry $registry)
+    public function __construct(ManagerRegistry $registry, private readonly Security $security)
     {
         parent::__construct($registry, Movie::class);
+    }
+
+    public function findAllByRating()
+    {
+        if ($this->security->isGranted('ROLE_ADMIN')) {
+            return $this->findAll();
+        }
+
+        /** @var User $user */
+        $user = $this->security->getUser();
+        $age = $user->getBirthday()?->diff(new \DateTimeImmutable('now'))->y;
+
+        $ratings = match (true) {
+            $age >= 17 => ['G', 'PG', 'PG-13', 'R', 'NC-17'],
+            $age >= 13 => ['G', 'PG', 'PG-13'],
+            default => ['G'],
+        };
+
+        $qb = $this->createQueryBuilder('m');
+
+        return $qb
+            ->andWhere($qb->expr()->in('m.rated', $ratings))
+            ->getQuery()
+            ->getResult();
     }
 
 //    /**
