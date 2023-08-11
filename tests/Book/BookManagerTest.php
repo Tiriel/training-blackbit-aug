@@ -26,9 +26,24 @@ class BookManagerTest extends TestCase
             ->disallowMockingUnknownTypes()
             ->onlyMethods(['findByApproxTitle'])
             ->getMock();
-        $repository->method('findByApproxTitle')->willReturn($book);
+        $repository
+            ->expects($this->once())
+            ->method('findByApproxTitle')
+            ->with('Fraternité')
+            ->willReturn($book);
 
-        $security = $this->createMock(Security::class);
+        $security = $this->getMockBuilder(Security::class)
+            ->disableOriginalConstructor()
+            ->disableOriginalClone()
+            ->disableArgumentCloning()
+            ->disallowMockingUnknownTypes()
+            ->onlyMethods(['isGranted'])
+            ->getMock();
+        $security->expects($this->once())
+            ->method('isGranted')
+            ->with('ROLE_BOOKWORM')
+            ->willReturn(true)
+            ;
         $manager = new BookManager($repository, 20, $security);
 
         $lotrBook = $manager->findByTitle('Fraternité');
