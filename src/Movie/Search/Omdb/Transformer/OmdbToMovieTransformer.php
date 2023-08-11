@@ -14,6 +14,8 @@ class OmdbToMovieTransformer implements DataTransformerInterface
         'Plot',
         'Released',
         'Year',
+        'imdbID',
+        'Rated',
     ];
 
     public function transform(mixed $value): Movie
@@ -35,7 +37,7 @@ class OmdbToMovieTransformer implements DataTransformerInterface
             ;
     }
 
-    public function reverseTransform(mixed $value)
+    public function reverseTransform(mixed $value): mixed
     {
         throw new \LogicException('Not implemented.');
     }

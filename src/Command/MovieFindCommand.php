@@ -39,7 +39,7 @@ class MovieFindCommand extends Command
         ;
     }
 
-    protected function initialize(InputInterface $input, OutputInterface $output)
+    protected function initialize(InputInterface $input, OutputInterface $output): void
     {
         $this->value = $input->getArgument('value');
         $this->io = new SymfonyStyle($input, $output);
@@ -50,7 +50,7 @@ class MovieFindCommand extends Command
         }
     }
 
-    protected function interact(InputInterface $input, OutputInterface $output)
+    protected function interact(InputInterface $input, OutputInterface $output): void
     {
         if (!$this->value) {
             $this->value = $this->io->ask('What is the title or IMDb ID you are searching for ?');
